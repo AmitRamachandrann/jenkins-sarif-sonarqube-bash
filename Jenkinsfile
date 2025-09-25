@@ -44,33 +44,33 @@ pipeline {
             }
         }
 
-        stage('Get user token') {
-            steps {
-                withCredentials([string(credentialsId: 'sonarqube-preprod-token', variable: 'SONAR_TOKEN')]) {
-                    script {
-                        def response = sh(
-                            script: """curl -s -u ${SONAR_TOKEN}: \
-                            -X POST "${SONAR_HOST}/api/user_tokens/generate?name=${PROJECT_KEY}" """,
-                            returnStdout: true
-                        ).trim()
+        // stage('Get user token') {
+        //     steps {
+        //         withCredentials([string(credentialsId: 'sonarqube-preprod-token', variable: 'SONAR_TOKEN')]) {
+        //             script {
+        //                 def response = sh(
+        //                     script: """curl -s -u ${SONAR_TOKEN}: \
+        //                     -X POST "${SONAR_HOST}/api/user_tokens/generate?name=${PROJECT_KEY}" """,
+        //                     returnStdout: true
+        //                 ).trim()
 
-                        echo "Raw API response: ${response}"
+        //                 echo "Raw API response: ${response}"
 
-                        def user_token = sh(
-                            script: """echo '${response}' | $jq -r '.token // empty'""",
-                            returnStdout: true
-                        ).trim()
+        //                 def user_token = sh(
+        //                     script: """echo '${response}' | $jq -r '.token // empty'""",
+        //                     returnStdout: true
+        //                 ).trim()
 
-                        if (user_token) {
-                            echo "✅ Generated user token"
-                            env.USER_TOKEN = user_token
-                        } else {
-                            echo "⚠️ Token not returned. Likely it already exists with name ${PROJECT_KEY}"
-                        }
-                    }
-                }
-            }
-        }
+        //                 if (user_token) {
+        //                     echo "✅ Generated user token"
+        //                     env.USER_TOKEN = user_token
+        //                 } else {
+        //                     echo "⚠️ Token not returned. Likely it already exists with name ${PROJECT_KEY}"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('SonarQube Analysis') {
             steps {
@@ -81,7 +81,7 @@ pipeline {
                           -Dsonar.projectKey=$PROJECT_KEY \
                           -Dsonar.sources=. \
                           -Dsonar.host.url=$SONAR_HOST \
-                          -Dsonar.login=$USER_TOKEN
+                          -Dsonar.login=$SONAR_TOKEN
                     """
                 }
             }
