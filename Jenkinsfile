@@ -62,7 +62,7 @@ pipeline {
                         ).trim()
 
                         if (user_token) {
-                            echo "✅ Generated user token: ${user_token}"
+                            echo "✅ Generated user token"
                             env.USER_TOKEN = user_token
                         } else {
                             echo "⚠️ Token not returned. Likely it already exists with name ${PROJECT_KEY}"
