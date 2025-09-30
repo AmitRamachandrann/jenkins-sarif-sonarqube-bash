@@ -147,7 +147,7 @@ map_hotspots_to_sarif() {
 
     $jq_bin -n \
       --arg rule "$rule" \
-      --arg level "$(echo "$severity" | tr '[:lower:]' '[:upper:]')" \
+      --arg level "$(echo "$severity" | level_map | tr '[:lower:]' '[:upper:]')" \
       --arg type "HOTSPOT" \
       --arg message "$message" \
       --arg file "$file_path" \
