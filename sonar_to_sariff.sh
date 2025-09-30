@@ -32,6 +32,18 @@ severity_map() {
   esac
 }
 
+level_map() {
+  local lev="$1"
+  case "$lev" in
+    MINOR) echo "warning" ;;
+    MAJOR|HIGH) echo "error" ;;
+    CRITICAL|BLOCKER) echo "error" ;;
+    MEDIUM) echo "warning" ;;
+    LOW) echo "warning" ;;
+    *) echo "none" ;;
+  esac
+}
+
 get_snippet() {
   local file="$1" start_line="$2" end_line="$3"
   if [[ ! -f "$file" ]]; then
@@ -86,7 +98,7 @@ map_issues_to_sarif() {
 
     $jq_bin -n \
       --arg rule "$rule" \
-      --arg level "$(severity_map "$severity")" \
+      --arg level "$(level_map "$severity")" \
       --arg type "$type" \
       --arg message "$message" \
       --arg file "$file_path" \
