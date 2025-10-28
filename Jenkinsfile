@@ -85,25 +85,14 @@ pipeline {
             }
         }
 
-        stage('Generate SARIF') {
-            steps {
-                withCredentials([string(credentialsId: 'sonarqube-preprod-token', variable: 'SONAR_TOKEN')]) {
-                    sh '''
-                        chmod +x ./sonar_to_sariff.sh
-                        ./sonar_to_sariff.sh get_sarif_output \
-                        "$SONAR_HOST" \
-                        "$SONAR_TOKEN" \
-                        "$PROJECT_KEY" \
-                        "$WORKSPACE" \
-                        "$SCANNER_VERSION" > sonar.sarif.json
-                    '''
-                }
-            }
-        }
-
-        stage('Archive SARIF Artifact') {
-            steps {
-                archiveArtifacts artifacts: 'sonar.sarif.json', fingerprint: true
+        stage('Export Sonar Findings') {
+            steps{
+                exportSonarQubeScan(
+                    component: "",
+                    project: "$PROJECT_KEY",
+                    host: "$SONAR_HOST",
+                    credentialId: "sonarqube-preprod-token"
+                )
             }
         }
     }
